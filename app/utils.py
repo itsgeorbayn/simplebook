@@ -127,6 +127,8 @@ def fix_img_src_paths(html: str) -> str:
         src = img.get('src', '')
         if src.startswith('../static/'):
             img['src'] = src.replace('../static/', '/static/')
+            
+    return str(soup)
 
 def send_email(subject, body, recipient):
     msg = MIMEText(body)

@@ -39,7 +39,7 @@ def create_post_submit():
     content = fix_img_src_paths(form.content.data)
     
     post = Post(author_id=current_user.id, title=title, slug=slug, content=content, created_at=datetime.now())
-    
+    print(post, content, form.content.data, post.content, fix_img_src_paths(form.content.data))
     if post and content:
         db.session.add(post)
         db.session.commit()

@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_migrate import Migrate
-import sys, os
+import sys, os, logging
 from .routes import *
 from .extensions import db, jwt, login_manager
 from dotenv import load_dotenv
@@ -13,6 +13,12 @@ migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
+    
+    logging.basicConfig(level=logging.DEBUG)
+    
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        return jsonify(error=str(e)), 500
     
     app.jinja_env.globals['getattr'] = getattr  
     
@@ -28,7 +34,6 @@ def create_app():
     login_manager.login_view = 'auth.login_form'
     login_manager.login_message = 'You must be logged in to access this page.'
     login_manager.login_message_category = 'warning'
-
     
     migrate.init_app(app, db)
     
