@@ -14,5 +14,3 @@ class Config:
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     JSON_AS_ASCII = False
-    
-print("Loaded SQL URI:", os.environ.get("APP_PASSWORD"))
