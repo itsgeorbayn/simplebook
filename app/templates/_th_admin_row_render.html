@@ -1,0 +1,8 @@
+{% if override_as_form %}
+    <label>
+        <input name="admin_permission_{{ col }}" id="admin_permission_{{ col }}" type="checkbox" {% if column_text %}checked{% endif %} hidden>
+        <span class="toggle"></span>
+    </label>
+{% else %}
+{{ column_text }}
+{% endif %}

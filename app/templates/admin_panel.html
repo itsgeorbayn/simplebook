@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-admin-left container container-profile">
+    <div class="block-admin block">
+    {% include '_flash.html' %}
+    {% set actions = admin.actions() %}
+    {% if actions %}
+        {% for action in actions %}
+        {% set action_name = actions[action]['name'] %}
+        <a class="admin-action {% if selected_action == action_name %}selected-action{% endif %}" href="{{ url_for('admin.panel', selected_action=action_name) }}">
+            {{ action }}
+        </a>
+        {% endfor %}
+    {% endif %}
+    <a class="admin-action" style="margin-top: auto" href="{{ url_for('profile.profile') }}">Return to profile page</a>
+    </div>
+</div>  
+<div class="container-admin-results container">
+    {% set edit = request.args.get('edit')|int %}
+    {% set edit_allow = admin.edit_comments or admin.edit_posts %}
+    <div class="block {% if edit and comments and edit_allow %} shrinked-block-post {% endif %} block-post block-admin admin-table-wrapper">
+        {% if params %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    {% if selected_action == 'list_users' %}
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Picture</th>
+                    <th>Verified</th>
+                    {% if admin.edit_users %}
+                        <th>Edit</th>
+                    {% endif %}
+                    {% if admin.ban_users %}
+                        <th>Banned?</th>
+                    {% endif %}
+                    {% if admin.edit_admins %}
+                    <th>Admin</th>
+                    {% endif %}
+                    
+                    {% elif selected_action == 'list_posts' %}
+                    <th class="narrow">ID</th>
+                    <th>Created at</th>
+                    <th class="narrow">Author</th>
+                    <th class="narrow">Title</th>
+                    <th>Is deleted</th>
+                    <th>Is edited</th>
+                    <th>Is reposted</th>
+                    {% if admin.edit_posts or admin.edit_comments %}
+                        <th class="narrow">Modify</th>
+                        {% if admin.edit_posts %}
+                        <th class="narrow">Edit</th>
+                        {% endif %}
+                    {% endif %}
+
+                    {% elif selected_action == 'list_admins' %}
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Last update</th>
+                    <th>Show Users</th>
+                    <th>Edit Users</th>
+                    <th>Ban Users</th>
+                    <th>Show Admins</th>
+                    <th>Configure Admins</th>
+                    <th>Show Posts</th>
+                    <th>Edit Posts</th>
+                    <th>Remove Posts</th>
+                    <th>Show Comments</th>
+                    <th>Edit Comments</th>
+                    <th>Remove Comments</th>
+                    <th>Show Messages</th>
+                    <th>Edit Messages</th>
+                    <th>Remove Messages</th>
+                    {% if admin.edit_admins %}
+                        <th>Edit</th>
+                        <th>Rights</th>
+                    {% endif %}
+
+                    {% elif selected_action == 'list_messages' %}
+                    <th>ID</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Content</th>
+                    <th>Is deleted</th>
+                    <th>Is forwarded</th>
+                    <th>Is edited</th>
+                    <th>Edit</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for unit in params %}
+                    <tr>
+                        {% if unit.id == edit %}
+                            {% if selected_action == 'list_users' %}
+                                {% set url = 'admin.update_user_info' %}
+                            {% elif selected_action == 'list_posts' %}
+                                {% set url = 'admin.update_post_info' %}
+                            {% elif selected_action == 'list_admins' %}
+                                {% set url = 'admin.update_admin_info' %}
+                            {% elif selected_action == 'list_messages' %}
+                                {% set url = 'admin.update_message_info' %}
+                            {% endif %}
+                            <form method="POST" enctype="multipart/form-data" action="{{ url_for(url, edit=edit) }}">
+                                {% set override_as_form = True %}
+                                {% include '_table_render.html' %}
+                            </form>
+                        {% else %}  
+                            {% include '_table_render.html' %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    {% if edit and comments and edit_allow %} 
+        <div class="small-block {% if edit %} shrinked-block-post {% endif %} block block-post block-admin admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Author's Username</th>
+                        <th>Created at</th>
+                        <th>Is deleted</th>
+                        <th>Is edited</th>
+                        <th>Is migrated</th>
+                        {% if admin.edit_comments %}
+                            <th>Edit</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for unit in comments %}
+                    <tr>
+                        <td>{{ unit.id }}</td>
+                        <td>{{ unit.author.username }}</td>
+                        <td>{{ unit.created_at_shorten }}</td>
+                        <td>
+                            {% if unit.is_deleted %}
+                            Yes. [{{ unit.deleted_at_shorten }}] <a style="color:#b1b1ff" href="{{ url_for('admin.return_comment_form', id=unit.id, edit=edit) }}">Return?</a>
+                            {% else %}
+                            No. <a style="color:#b1b1ff" href="{{ url_for('admin.delete_comment_form', id=unit.id, edit=edit) }}">Delete?</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if unit.is_edited %}
+                            Yes. [{{ unit.edited_at_shorten }}]
+                            {% else %}
+                            No.
+                            {% endif %}
+                        </td>
+                        <td>{{ unit.is_migrated }}</td>
+                        {% if admin.edit_comments %}
+                        <td>
+                            <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+                                <a href="{{ url_for('admin.edit_comment_form', id=unit.id) }}" style="width: 20px">
+                                    <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="" class="settings">
+                                </a>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

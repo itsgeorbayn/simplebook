@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST" action="{{ other_action if other_action else url_for('messages.edit_message', id=id, friend_id=friend_id) }}">
+    {{ form.hidden_tag() }}
+    <div class="block">
+        <h2>Edit message</h2>
+
+        {% include '_flash.html' %}
+
+        <div class="fields">
+            <div class="field">
+                {{ form.content(placeholder=form.content.label.text, value=content) }}
+            </div>
+
+            <div class="field">
+                {% set button_text, href, type = "Edit", url_for('messages.edit_message_submit', id=id, friend_id=friend_id), "button" %}
+                {% include '_submit.html' %}
+            </div>
+        </div>  
+
+        <div class="links words">
+            <a href="{{ url_for('index.index_page') }}">Go back</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

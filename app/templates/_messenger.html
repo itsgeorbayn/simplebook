@@ -1,0 +1,158 @@
+<div class="messenger block" id="messenger">
+    <div class="content" style="box-sizing:border-box">
+        {% for message in messages %}
+        <div class="message" data-message-id="{{ message['id'] }}" data-message-is-forwarded="{{ message['is_forwarded'] }}" data-sender-id="{{ message['sender'] }}">
+            <div>
+                <img class="profile-picture" src="{{ url_for('static', filename='images/profile/' + message['sender_picture'])}}" alt="">
+            </div>
+            <div>
+                {% if message['is_forwarded'] %}
+                <div class="small-text" style="font-style: italic">
+                    <div class="is-forwarded" title="Forwarded at {{ message['forwarded_at'] }}">Forwarded from <img class='forwarded-picture' src="{{ url_for('static', filename='images/profile/' + message['forwarded_message_author_picture'])}}" alt=""> {{ message['forwarded_message_author'] }}</div>
+                </div>
+                {% endif %}
+                <div class="small-text">
+                    {{ message['sender_username'] }} • {{ message['sended_at'] }} {% if message['is_edited'] %} • <img class='edited-picture' src="{{ url_for('static', filename='images/buttons/edit.png')}}" title="Edited {{ message['edited_at_shorten'] }} ago [{{ message['edited_at'] }}]"> {% endif %}
+                </div>
+                <div>
+                    {{ message['content'] }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" action="{{ url_for('messages.send_message', friend_id=friend_id) }}">
+        <div class="panel">
+            <div class="send-message">
+                {{ form.content(placeholder=form.content.label.text, autocomplete='off', autofocus=True) }}
+            </div>
+            <div class="send">
+                <button>
+                    <img src="{{ url_for('static', filename='images/buttons/send.png')}}" alt="">
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="context-menu" id="global-context-menu">
+    <div class="menu-item" id="edit" onclick="handleMenuAction('edit')">Edit</div>
+    <div class="menu-item" id="forward" onclick="handleMenuAction('forward')">Forward</div>
+    <div class="menu-item" id="remove" onclick="handleMenuAction('remove')">Remove</div>
+</div>
+
+<script>
+    window.onload = function() {
+        const content = document.querySelector('.messenger .content');
+        if (content) {
+            content.scrollTop = content.scrollHeight;
+        }
+    };
+</script>
+
+<script>
+    let currentMessageId = null;
+    const friendId = {{ friend_id | tojson }};
+    const currentUserId = {{ id | tojson }};
+
+    document.querySelectorAll('.message').forEach(msg => {
+        msg.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+
+            const menu = document.getElementById('global-context-menu');
+            const messageSenderId = this.dataset.senderId; 
+            const messageIsForwarded = this.dataset.messageIsForwarded
+            
+            const editMenuItem = document.getElementById('edit');
+            const removeMenuItem = document.getElementById('remove');
+            const forwardMenuItem = document.getElementById('forward');
+
+            editMenuItem.style.display = 'none';
+            removeMenuItem.style.display = 'none';
+            forwardMenuItem.style.display = 'none';
+
+            if (messageSenderId && parseInt(messageSenderId) === currentUserId) {
+                editMenuItem.style.display = 'block';
+                removeMenuItem.style.display = 'block';
+                forwardMenuItem.style.display = 'block';
+            } else if (messageSenderId && parseInt(messageSenderId) === friendId) {
+                forwardMenuItem.style.display = 'block';
+            }
+
+            if (messageIsForwarded === 'True') {
+                editMenuItem.style.display = 'none';
+            }
+
+            menu.style.display = 'block';
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+
+            currentMessageId = msg.dataset.messageId;
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('global-context-menu');
+        if (!menu.contains(event.target)) {
+            menu.style.display = 'none';
+        }
+    });
+
+    function handleMenuAction(action) {
+        if (currentMessageId) {
+            const url = `/messages/${action}/${currentMessageId}`;
+            window.location.href = url;
+        }
+    }
+
+    window.onload = function() {
+        const content = document.querySelector('.messenger .content');
+        if (content) {
+            content.scrollTop = content.scrollHeight;
+        }
+    };
+</script>
+
+<script>
+    let lastMessageId = Math.max(...Array.from(document.querySelectorAll('.message'))
+        .map(m => parseInt(m.dataset.messageId || 0)));
+
+    function fetchNewMessages() {
+        fetch(`/messages/live?friend_id=${friendId}&after_id=${lastMessageId}`)
+            .then(response => response.json())
+            .then(messages => {
+                const box = document.querySelector('.messenger .content');
+                messages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message');
+                    messageDiv.dataset.messageId = msg.id;
+                    messageDiv.dataset.messageIsForwarded = msg.is_forwarded;
+                    messageDiv.dataset.senderId = msg.sender;
+
+                    messageDiv.innerHTML = `
+                        <div>
+                            <img class="profile-picture" src="/static/images/profile/${msg.sender_picture}" alt="">
+                        </div>
+                        <div>
+                            ${msg.is_forwarded ? `
+                                <div class="small-text" style="font-style: italic">
+                                    <div class="is-forwarded" title="Forwarded at ${msg.forwarded_at}">Forwarded from 
+                                    <img class='forwarded-picture' src="/static/images/profile/${msg.forwarded_message_author_picture}" alt=""> ${msg.forwarded_message_author}</div>
+                                </div>` : ''}
+                            <div class="small-text">
+                                ${msg.sender_username} • ${msg.sended_at} ${msg.is_edited ? ` • <img class='edited-picture' src="/static/images/buttons/edit.png" title="Edited ${msg.edited_at_shorten} ago [${msg.edited_at}]">` : ''}
+                            </div>
+                            <div>${msg.content}</div>
+                        </div>
+                    `;
+
+                    box.appendChild(messageDiv);
+                    lastMessageId = Math.max(lastMessageId, msg.id);
+                    box.scrollTop = box.scrollHeight;
+                });
+            });
+    }
+
+    setInterval(fetchNewMessages, 3000);
+</script>

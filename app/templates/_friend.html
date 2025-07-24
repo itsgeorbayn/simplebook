@@ -1,0 +1,17 @@
+{% if friend["is_accepted"] %}
+<a href="{{ href }}" style="all: unset; cursor: pointer;">
+    <div class="friend">
+        <div class="friend-image">
+            <img src="{{ url_for('static', filename='images/profile/' + friend['picture']) }}" alt="">
+        </div>
+        <div class="friend-data">
+            <div class="small-text username">
+                {{ friend['username'] }}
+            </div>
+            <div class="small-text email">
+                {{ friend['email'] }}
+            </div>
+        </div>
+    </div>
+</a>
+{% endif %}

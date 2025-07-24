@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="block">
+        <h2>Forward message</h2>
+
+        {% include '_flash.html' %}
+ 
+        <div class="friends">
+            {% for friend in friends %}
+            <form method="POST" action="{{ url_for('messages.forward_message', id=id, friend_id=friend['id']) }}">
+                <button class="unset">
+                    {% set href = url_for('messages.forward_message', id=id) %}
+                    {% include '_friend.html' %}     
+                </button> 
+            </form>
+            {% endfor %}
+        </div>
+
+        <div class="links words">
+            <a href="{{ url_for('index.index_page') }}">Go back</a>
+        </div>
+    </div>
+{% endblock %}

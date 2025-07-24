@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('auth.verification_form') }}">
+    {{ form.hidden_tag() }}
+    <div class="block">
+        <h2>Verify</h2>
+
+        {% include '_flash.html' %}
+
+        <div class="fields">
+            <div class="field">
+                {{ form.verification_code(placeholder=form.verification_code.label.text, autocomplete="off") }}
+            </div>
+
+            <div class="field">
+                {% set button_text, href, type = "Continue", url_for('auth.login_submit'), "button" %}
+                {% include '_submit.html' %}
+            </div>
+        </div>
+
+        <div class="links words"  style="display:block">
+            <a href="{{ url_for('index.index_page') }}">Go back</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

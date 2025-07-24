@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('auth.register_form') }}">
+    {{ form.hidden_tag() }}
+    <div class="block">
+        <h2>Register page</h2>
+
+        {% include '_flash.html' %}
+
+        <div class="fields">
+            <div class="field">
+                {{ form.username(placeholder=form.username.label.text) }}
+            </div>
+            
+            <div class="field">
+                {{ form.email(placeholder=form.email.label.text) }}
+            </div>
+            
+            <div class="field">
+                {{ form.password(placeholder=form.password.label.text) }}
+            </div>
+            
+            <div class="field">
+                {{ form.confirm_password(placeholder=form.confirm_password.label.text) }}
+            </div>
+
+            <div class="field index-fields">
+                <div>{{ form.agree }}{{ form.agree.label }}</div>
+            </div>
+
+            <div class="field">
+                {% set button_text, href, type = "Register", url_for('auth.register_submit'), "button" %}
+                {% include '_submit.html' %}
+            </div>
+        </div>
+
+        <div class="links words">
+            <a href="{{ url_for('index.index_page') }}">Go back</a>
+            <a href="{{ url_for('auth.login_form') }}">Login here</a>
+        </div>
+    </div>
+</form>
+{% endblock %}

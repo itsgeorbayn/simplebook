@@ -1,0 +1,830 @@
+code {
+    font-family: monospace
+}
+
+.block {
+    border-radius: 0.6rem;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding-inline: 2.4rem;
+    padding-block: 2.4rem 1.2rem;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    color: rgb(240, 240, 240);
+    box-sizing: border-box;
+    width: 26rem;
+}
+
+.block-post {
+    width: auto;
+}
+
+.container-admin-left {
+    width: 20rem !important;
+    min-width: 20rem !important;
+}
+
+input:checked + .toggle::after {
+    content: "True";
+}
+
+input:not(:checked) + .toggle::after {
+    content: "False";
+}
+
+.toggle {
+    cursor: pointer;
+}
+
+.overflow-text {
+    display: block;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    margin: auto;
+}
+
+.block-admin {
+    height: 95%;
+    padding: 0.4rem;
+    display: flex;
+    gap: 0.2rem;
+    width: 20rem;
+}
+
+.down-block-admin {
+    height: 25%;
+    padding: 0.4rem;
+}
+
+.shrinked-block-post {
+    height: 68%;
+}
+
+.small-block {
+    height: 25%;
+}
+
+.admin-action {
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 0.6rem;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.admin-action:active, .selected-action {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.friends-block, .news-block {
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.news-item img {
+    width: 24px;
+    height: 24px
+}
+
+.friends-block::-webkit-scrollbar,
+.news-block::-webkit-scrollbar {
+    display: none;
+}
+
+body.profile, body.admin {
+    padding: 1rem;
+    height: 100vh;
+    display: flex;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+body.admin {
+    gap: 0rem
+}
+
+body.default {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+}
+
+body.profile .container .posts {
+    overflow-x:  auto;
+}
+.fields {
+    gap: 1.6rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.block .field input:not([type="checkbox"]) {
+    width: 100%;
+    border-radius: 1000rem;
+    font-size: 20px;
+    padding: 0.8rem 1.4rem;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    color: rgb(240, 240, 240);
+    font-weight: 500;
+}
+
+.block .field input[type="checkbox"] {
+    margin-right: 0.4rem;
+    margin-top: auto;
+    cursor: pointer;
+}
+
+.block .field input[type="checkbox"] + * {
+    cursor: pointer;
+}
+
+.block .field input:focus {
+    outline: none;
+}
+
+.block .field input::placeholder {
+    transition: all 0.3s ease-out;
+    color: rgb(240, 240, 240);
+}
+
+.block .field input:focus::placeholder {
+    color: transparent;
+}
+
+.block .field input[type='submit'] {
+    background-color: rgb(240, 240, 240);
+    color: black;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif
+}
+
+h2 {
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 2rem;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.alerts {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    overflow: visible;
+    min-height: 2.4rem;
+}
+
+.alert {
+    display: flex;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    padding: 0.6rem 1rem;
+    border-radius: 1rem;
+    align-items: center;
+    opacity: 0;
+    animation: show 1s ease forwards;
+    max-width: 100%;
+    z-index: 1;
+    font-size: 14px;
+    
+}
+
+.alert-text {
+    text-align: center;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-left: 0.4rem;
+    max-width: 21rem;
+}
+
+@keyframes show {
+    to {
+        opacity: 1;
+    }
+}
+
+.index-fields {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+}
+
+.index-fields .field .button-container .button .button__content {
+    padding: 0.6rem 2.4rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 26rem;
+    min-width: 26rem;
+    gap: 1rem;
+}
+
+a {
+    color:white
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.words {
+    padding-top: 1.2rem;
+}
+
+input[id='verification_code'] {
+    text-transform: uppercase;
+}
+
+input[id='verification_code']::placeholder {
+    text-transform: none;
+}
+
+.profile-badge {
+    height: 4rem;
+    margin-bottom: 1rem;
+    display: flex;
+}
+
+.profile-badge div:nth-child(1) {
+    width: 4rem;
+}
+
+.profile-badge div:nth-child(1) img {
+    width: 4rem;
+    height: 4rem;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.block-post img {
+    max-width: 24rem;
+    max-height: 24rem;
+    width: auto;
+    height: auto;
+    display: block;
+}
+
+body.admin div.container {
+    margin-right: 1rem;
+}
+
+body.admin div.container:first-child {
+    margin-right: 1rem !important;
+}
+
+body.admin div.container:last-child {
+    margin-right: 0
+}
+
+body.admin div.container:nth-last-child(2) {
+    margin-right: 0;
+}
+
+.friend-image img {
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+td input::placeholder {
+    color: rgb(180, 180, 180)
+}
+
+th.narrow, td.narrow {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.profile-badge div:nth-child(2) {
+    width: 100%;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+span.social-share {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    width: 12rem;
+}
+
+a.email, div.email {
+    font-size: 14px
+}
+
+span.social-share span img {
+    height: 1.2rem;
+    margin-right: 0.2rem;
+}
+
+.social-share > span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.social-share img {
+    height: 16px;
+    width: auto;
+    display: inline-block;
+}
+
+input[type='file'] {
+    max-width: 21.2rem;
+    font-size: 16px !important;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+input[type='file']::file-selector-button {
+    padding: 0.4rem 1.2rem;
+    border: none;
+    border-radius: 1000rem;
+    background-color: rgb(240, 240, 240);
+    color: black;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 1rem;
+}
+
+input[type='file']::file-selector-button:hover {
+    background-color: #ddd;
+}
+
+.editor {
+    margin-top: 1rem;
+}
+
+.create-post {
+    resize: horizontal;
+    overflow: auto;
+    min-width: 30rem;
+    width: 50rem;
+    max-width: 60rem;
+}
+.friend-data {
+    text-align: left;
+}
+
+.friend-buttons {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.friend, .news-item {
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.news-item {
+    align-items: start;
+    text-align: left;
+    flex-direction: column;
+    gap: 0.4rem
+}
+
+.friends, .news {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem
+}
+
+.friend-buttons form button img {
+    width: 40px;
+    height: 40px;
+    margin: 0
+}
+
+.friend-image {
+    width: 3rem;
+    height: 3rem;
+    margin-right: 0.6rem;
+}
+
+.friend-inner {
+    display: flex;
+    align-items: center;
+}
+
+.link-submit {
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.messenger {
+    position: relative;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 0.6rem;
+    height: 2.4rem;
+    width: 100%;
+    border-top: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.6rem
+}
+
+.send {
+    margin-left: auto;
+}
+
+.send button img {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.send button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items:end
+}
+
+.send-message input[type='text'] {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    width: 100%
+}
+
+div.send-message {
+    width: 100%
+}
+
+.send-message input[type='text']::placeholder {
+    transition: all 0.3s ease-out;
+}
+
+.send-message input[type='text']:focus::placeholder {
+    color: transparent;
+}
+
+.content {
+    padding: 1.2rem;
+    gap: 0.6rem;
+    height: calc(100% - 2.4rem);
+    box-sizing: border-box;
+    overflow: auto;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.message {
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 0.4em 1rem;
+    cursor: default;
+}
+
+.message img.profile-picture {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.6rem;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.message div:first-child img {
+    margin-top: 0.4rem;
+}
+
+.small-text {
+    font-size: 14px;
+}
+
+
+.context-menu-wrapper {
+    position: relative;
+}
+
+.context-menu {
+    display: none;
+    position: absolute;
+    border: 1px solid #ccc;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+    background-color: #2e476271;
+    border-radius: 0.3rem;
+    overflow: hidden;
+    min-width: 10rem;
+    color: white
+}
+
+.menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.menu-item:hover {
+    backdrop-filter: blur(5px);
+    background-color: #42678fd1;
+}
+
+.messenger.block {
+    overflow: hidden;
+    position: relative;
+    height: 100%
+}
+
+.container-profile {
+    max-width: 60rem;
+    max-height: 100%;
+    box-sizing: border-box;
+    background-color: transparent;
+}
+
+.profile-block, .messenger {
+    min-width: 26rem;
+    max-width: 60rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.friend:last-child {
+    margin-bottom: 1rem;
+}
+
+button.unset {
+    all: unset;
+    cursor: pointer;
+    font: inherit;
+    width: 100%
+}
+
+.small-text .is-forwarded .forwarded-picture {
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 45%;
+    margin-block: 0;
+    margin-inline: 0.6rem 0.2rem;
+}
+
+img.comment-author {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+}
+
+.small-text .is-forwarded {
+    display: flex;
+    align-items: center;
+}
+
+.edited-picture {
+    width: 1em;
+    height: 1em;
+    cursor: help;
+}
+
+.container-posts, .container-admin-results {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    gap: 2%;
+}
+
+.posts-block {
+    border-radius: 0.6rem;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    padding-inline: 2.4rem;
+    padding-block: 2.4rem 1.2rem;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    color: rgb(240, 240, 240);
+    box-sizing: border-box;
+    width: 100%;
+    overflow: auto;
+    max-height: 100%;
+}
+
+.inner-posts-block {
+    flex-direction: column;
+    display: flex;
+    gap: 3.2rem;
+}
+
+.posts-render-questions a {
+    color:#b1b1ff
+}
+
+td input {
+    font-size: 16px;
+    background-color: transparent;
+    color: white;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+}
+
+td input:focus {
+    cursor: text
+}
+
+hr {
+    margin-block: 1rem;
+}
+
+.comments-img {
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+    margin-right: 0.3rem;
+}
+
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    display: flex;
+}
+
+.comment {
+    border: 1px solid #ccc;
+    padding: 0.6rem 1rem;
+    border-radius: 0.4rem;
+    display: flex;
+    gap: 0.6rem
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: row;
+    margin-block: 1rem 0.6rem;
+    gap: 1rem;
+}
+
+.comment-action-buttons {
+    margin-block: 0;
+}
+
+.comment-action-buttons {
+    margin-block: 0;
+}
+
+.action-buttons div {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.action-buttons img {
+    width: 18px;
+    width: 18px;
+}
+
+.action-buttons a {
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
+}
+
+.action-buttons a span {
+    margin-bottom: 1px;
+}
+
+h3 {
+    margin-top: 0.6rem;
+}
+
+div.comments {
+    margin-block: 0.6rem
+}
+
+a.leave-comment {
+    display: flex;
+}
+
+.admin-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    color: rgb(240, 240, 240);
+    table-layout:auto
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.6rem 1rem;
+}
+
+.admin-table th {
+    background-color: rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+}
+
+.admin-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.admin-picture {
+    width: 2rem;
+    height: 2rem;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+}
+
+.admin-panel-user-picture {
+    width: 1.6rem !important;
+    height: 1.6rem !important;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+td img.settings {
+    width: 1.2rem;
+    height: 1.2rem;
+    transition: all 0.5s ease;
+}
+
+td img.save-settings {
+    transition: all 0.3s ease;
+}
+
+.rotate-img:hover {
+    rotate: -180deg;
+}
+
+td img.settings:hover {
+    transform: scale(1.2);
+}
+
+button.settings {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    cursor: pointer;
+}

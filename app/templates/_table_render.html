@@ -1,0 +1,198 @@
+{% if selected_action == 'list_users' %}
+<td>{{ unit.id }}</td>
+<td>
+    {% if unit.id == edit %}
+    <input id="username" name="username" type="text" value="{{ unit.username }}" placeholder="Input username...">
+    {% else %}
+    {{ unit.username }}
+    {% endif %}
+</td>
+<td>{{ unit.email }}</td>
+<td style="display:flex;align-items:center;gap:1rem">
+    {% if override_as_form %}
+    <input type="file" id="fileInput" name="picture" style="display:none" accept="image/*">
+    <img src="{{ url_for('static', filename='images/profile/' + unit.picture) }}" alt="User Picture" class="admin-panel-user-picture" id="profilePic">
+    {% else %}
+    <img src="{{ url_for('static', filename='images/profile/' + unit.picture) }}" alt="User Picture" class="admin-panel-user-picture">  
+    {% endif %}
+    {{ unit.picture }}
+</td>
+<td>{{ '✔' if unit.is_verified else '✘' }}</td>
+{% if admin.edit_users %}
+<td>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        {% if override_as_form %}
+        <button style="width: 20px" class="settings">
+            <img src="{{ url_for('static', filename='images/buttons/diskette.png') }}" alt="" class="save-settings settings">
+        </button>
+        {% else %}
+        <a href="{{ url_for('admin.panel', selected_action=selected_action, edit=unit.id) }}" style="width: 20px">
+            <img src="{{ url_for('static', filename='images/buttons/setting.png') }}" alt="" class="rotate-img settings">
+        </a>
+        {% endif %}
+    </div>
+</td>
+{% endif %}
+{% if admin.ban_users %}
+<td>
+    {% if unit.is_banned %}
+    Yes. [{{ unit.banned_at_shorten }}] <a style="color:#b1b1ff" href="{{ url_for('admin.unban_user', id=unit.id) }}">Unban?</a>
+    {% else %}
+    No. <a style="color:#b1b1ff" href="{{ url_for('admin.ban_user', id=unit.id) }}">Ban?</a>
+    {% endif %}
+</td>
+{% endif %}
+{% if admin.list_admins %}
+<td>
+    {% if unit.admin_permissions %}
+    Yes. {% if admin.edit_admins %}<a style="color:#b1b1ff" href="{{ url_for('admin.admin_demote', id=unit.id) }}">Demote?</a>{% endif %}
+    {% else %}
+    No. {% if admin.edit_admins %}<a style="color:#b1b1ff" href="{{ url_for('admin.admin_promote', id=unit.id) }}">Promote?</a>{% endif %}
+    {% endif %}
+</td>
+{% endif %}
+{% elif selected_action == 'list_posts' %}
+<td>{{ unit.id }}</td>
+<td>{{ unit.created_at_shorten }}</td>
+<td>{{ unit.author.username }}</td>
+<td>
+    {% if unit.id == edit %}
+    <input id="title" name="title" type="text" value="{{ unit.title }}" placeholder="Input title...">
+    {% else %}
+    {{ unit.title if unit.title else "-- no title --" }}
+    {% endif %}
+</td>
+<td>
+    {% if unit.is_deleted %}
+    Yes. [{{ unit.deleted_at_shorten }}] <a style="color:#b1b1ff" href="{{ url_for('admin.return_post_form', id=unit.id) }}">Return?</a>
+    {% else %}
+    No. <a style="color:#b1b1ff" href="{{ url_for('admin.delete_post_form', id=unit.id) }}">Delete?</a>
+    {% endif %}
+</td>
+<td>
+    {% if unit.is_edited %}
+    Yes. [{{ unit.edited_at_shorten }}]
+    {% else %}
+    No.
+    {% endif %}
+</td>
+<td title="{{ 'Reposted by <' + unit.reference_author + '>' if unit.is_reposted }}" style="{{ 'cursor:help' if unit.is_reposted }}">
+    {% if unit.is_reposted %}
+    Yes. [{{ unit.reposted_at_shorten }}]
+    {% else %}
+    No.
+    {% endif %}
+</td>
+{% if admin.edit_posts or admin.edit_comments %}
+<td>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        {% if override_as_form %}
+        <button style="width: 20px" class="settings">
+            <img src="{{ url_for('static', filename='images/buttons/diskette.png') }}" alt="" class="save-settings settings">
+        </button>
+        {% else %}
+        <a href="{{ url_for('admin.panel', selected_action=selected_action, edit=unit.id) }}" style="width: 20px">
+            <img src="{{ url_for('static', filename='images/buttons/setting.png') }}" alt="" class="rotate-img settings">
+        </a>
+        {% endif %}
+    </div>
+</td>
+{% if admin.edit_posts %}
+<td>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        <a href="{{ url_for('admin.edit_post_form', id=unit.id) }}" style="width: 20px">
+            <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="" class="settings">
+        </a>
+    </div>
+</td>
+{% endif %}
+{% endif %}
+{% elif selected_action == 'list_admins' %}
+<td>{{ unit.user.id }}</td>
+<td>{{ unit.user.username }}</td>
+<td>{{ unit.last_edited_shorten }}</td>
+{% set columns = [
+    'list_users', 'edit_users', 'ban_users', 'list_admins', 'edit_admins',
+    'list_posts', 'edit_posts', 'remove_posts',
+    'list_comments', 'edit_comments', 'remove_comments',
+    'list_messages', 'edit_messages', 'remove_messages'
+] %}
+
+{% for col in columns %}
+    {% set column_text = getattr(unit, col) %}
+    <td>{% include '_th_admin_row_render.html' %}</td>
+{% endfor %}
+{% if admin.edit_admins %}
+<td>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        {% if override_as_form %}
+        <button style="width: 20px" class="settings">
+            <img src="{{ url_for('static', filename='images/buttons/diskette.png') }}" alt="" class="save-settings settings">
+        </button>
+        {% else %}
+        <a href="{{ url_for('admin.panel', selected_action=selected_action, edit=unit.id) }}" style="width: 20px">
+            <img src="{{ url_for('static', filename='images/buttons/setting.png') }}" alt="" class="rotate-img settings">
+        </a>
+        {% endif %}
+    </div>
+</td>
+<td>
+    <a style="color:#b1b1ff" href="{{ url_for('admin.admin_demote', id=unit.id) }}">Demote?</a>
+</td>
+{% endif %}
+{% elif selected_action == 'list_messages' %}
+<td> {{ unit.id }} </td>
+<td> {{ unit.sender_user.username }} </td>
+<td> {{ unit.receiver_user.username }} </td>
+<td style="max-width: 300px;">
+    {% if edit == unit.id and show_full_message %}
+    <div class="overflow-text">{{ unit.content }}</div>
+    <a style="color:#b1b1ff" href="{{ url_for('admin.panel', selected_action=selected_action)}}">Hide full message</a>
+    {% elif unit.content|length > 32 %}
+    <a style="color:#b1b1ff" href="{{ url_for('admin.panel', selected_action=selected_action, edit=unit.id, show_full_message=True)}}">Show full message</a>
+    {% else %}
+    {{ unit.content }}
+    {% endif %}
+</td>
+<td>
+    {% if unit.is_deleted %}
+    Yes. [{{ unit.deleted_at_shorten }}] <a style="color:#b1b1ff" href="{{ url_for('admin.return_message_form', id=unit.id, edit=edit if edit != 0 else None, show_full_message=show_full_message) }}">Return?</a>
+    {% else %}
+    No. <a style="color:#b1b1ff" href="{{ url_for('admin.delete_message_form', id=unit.id, edit=edit if edit != 0 else None, show_full_message=show_full_message) }}">Delete?</a>
+    {% endif %}
+</td>
+<td>
+    {% if unit.is_forwarded %}
+    Yes. [{{ unit.forwarded_at_shorten }}]
+    {% else %}
+    No.
+    {% endif %}
+</td>
+<td>
+    {% if unit.is_edited %}
+    Yes. [{{ unit.edited_at_shorten }}]
+    {% else %}
+    No.
+    {% endif %}
+</td>
+{% if admin.edit_messages %}
+<td>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%">
+        <a href="{{ url_for('admin.edit_message', id=unit.id) }}" style="width: 20px">
+            <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="" class="settings">
+        </a>
+    </div>
+</td>
+{% endif %}
+{% endif %}
+<script>
+    document.getElementById('profilePic').addEventListener('click', function () {
+        document.getElementById('fileInput').click();
+    });
+  
+    document.getElementById('fileInput').addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            console.log("Selected file:", this.files[0].name);
+        }
+    });
+</script>

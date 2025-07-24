@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="form">
+    <h2>Friend list</h2>
+
+    {% include '_flash.html' %}
+
+    {% for friend in friends %}
+    {% if friend["is_accepted"] %}
+    <a href="{{ url_for('friends.friends_profile', friend_id=friend['id']) }}" style="all: unset; cursor: pointer;">
+        <div class="friend">
+            <div>
+                Friend's username: {{ friend['username'] }}
+            </div>
+            <div>
+                Friend's email: {{ friend['email'] }}
+            </div>
+        </div>
+    </a>
+    {% endif %}
+    {% endfor %}
+
+    <div class="links">
+        <a href="{{ url_for('friends.invite_friend')}}">Add more friends</a>
+        <a href="{{ url_for('profile.profile')}}">Return to profile</a>
+    </div>
+</div>
+
+<div class="form">
+    <h2>Friend invites</h2>
+
+    {% for invite in invites %}
+    <div class="invite">
+        <div style="display:flex">
+            <div>
+                <div>
+                    User's username: {{ invite['username'] }}
+                </div>
+                <div>
+                    User's email: {{ invite['email'] }}
+                </div>
+            </div>
+            <form action="{{ url_for('friends.add_friend', id=invite['id']) }}" method="post" style="display:inline;">
+                <input type="hidden" name="response" value="yes">
+                <button type="submit" style="border:none; background:none; padding:0; cursor:pointer;">
+                    <img src="{{ url_for('static', filename='images/buttons/yes.png') }}" style="width:36px;height:36px;margin:0px 10px">
+                </button>
+            </form>
+            
+            <form action="{{ url_for('friends.add_friend', id=invite['id']) }}" method="post" style="display:inline;">
+                <input type="hidden" name="response" value="no">
+                <button type="submit" style="border:none; background:none; padding:0; cursor:pointer;">
+                    <img src="{{ url_for('static', filename='images/buttons/no.png') }}" style="width:36px;height:36px;margin:0px 10px">
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

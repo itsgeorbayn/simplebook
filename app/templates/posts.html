@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-posts container">
+    <div class="posts-block">
+        {% if posts %}
+        {% for post in posts %}
+        <div class="post block-post">
+            <h3>{{ prefix }} Post #{{ post['id'] }}</h3>
+            <div>Published in: {{ post['created_at_shorten'] }}</div>
+            {{ post['content']|safe }}
+            <hr style="height:4px;background-color:white">
+            <h3>Comments:
+                <a href="{{ url_for('posts.add_comment_form', post_id=post['id'])}}">
+                    <img class="comments" src="{{ url_for('static', filename='images/buttons/plus.svg') }}">Leave comment
+                </a>
+            </h3>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

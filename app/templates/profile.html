@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container container-profile">
+    <div class="block profile-block">
+        <h2>{{ prefix }} profile</h2>
+
+        {% include '_flash.html' %}
+        <div class="profile-badge">
+            <div>
+                <a href="{{ url_for('profile.update_form', field='picture') }}">
+                    <img src="{{ url_for('static', filename='images/profile/' + picture) }}" alt="">
+                </a>
+            </div>
+            <div>
+                <a class="username" href="{{ url_for('profile.update_form', field='username') }}">{{ username }}</a>
+                <a class="email">{{ email }}</a>
+                <span class="social-share">
+                    {% set this_user = current_user if not friends_profile else friend_user %}
+                    <span><img src="{{ url_for('static', filename='images/buttons/heart.png') }}" alt="">{{ this_user.likes|length }}</span>
+                    <span><img src="{{ url_for('static', filename='images/buttons/comment.png') }}" alt="">{{ this_user.received_comments|length }}</span>
+                    <span><img src="{{ url_for('static', filename='images/buttons/reply.png') }}" alt="">{{ this_user.reposted_posts|length }}</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="links">
+            {% if self_profile %}
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% if not is_verified and not friends_profile %}
+            <a href="{{ url_for('auth.verification_form') }}">Verify</a>
+            {% elif current_user.admin_permissions %}
+            <a href="{{ url_for('admin.panel') }}">Admin Panel</a>
+            {% endif %}
+            <a href="{{ url_for('posts.create_post_form') }}">Create Post</a>
+            {% else %}
+                <a href="{{ url_for('profile.profile') }}">Return to profile</a>
+                <form action="{{ url_for('friends.remove_friend', id=friend_id) }}" method="post">
+                    <button type="submit" class="link-submit">
+                        Remove friend
+                    </button>
+                </form>
+                <a href="{{ url_for('index.index_page') }}">Message friend</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if friends_profile %}
+    {% include '_messenger.html' %}
+    {% endif %}
+    
+    {% if self_profile %}
+    <div class="block profile-block friends-block">
+        <h2>Friend list</h2>
+        
+        <div class="friends">
+            {% for friend in friends %}
+                {% set href = url_for('friends.friends_profile', friend_id=friend['id']) %}
+                {% include '_friend.html' %}       
+            {% endfor %}
+        </div>
+        
+        <div class="links">
+            <a href="{{ url_for('friends.invite_friend') }}">Add more friends</a>
+        </div>
+    </div>
+    {% endif %} 
+    
+    {% if invites and self_profile %}
+    <div class="block profile-block">
+        <h2>Friend invites</h2>
+    
+        <div class="friends">
+            {% for invite in invites %}
+            <div class="friend">
+                <div class="friend-image">
+                    <img src="{{ url_for('static', filename='images/profile/' + invite['picture']) }}" alt="">
+                </div>
+                <div class="friend-data">
+                    <div class="small-text username">
+                        {{ invite['username'] }}
+                    </div>
+                    <div class="small-text email">
+                        {{ invite['email'] }}
+                    </div>
+                </div>
+                <div class="friend-buttons">
+                    <form action="{{ url_for('friends.add_friend', id=invite['id']) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="response" value="yes">
+                        <button type="submit" style="border:none; background:none; padding:0; cursor:pointer;">
+                            <img src="{{ url_for('static', filename='images/buttons/yes.png') }}">
+                        </button>
+                    </form>
+                    
+                    <form action="{{ url_for('friends.add_friend', id=invite['id']) }}" method="post" style="display:inline;">
+                        <input type="hidden" name="response" value="no">
+                        <button type="submit" style="border:none; background:none; padding:0; cursor:pointer;">
+                            <img src="{{ url_for('static', filename='images/buttons/no.png') }}">
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="container-posts container">
+    {% if user_posts %}
+    <div class="posts-block">
+        <div class="posts-render-questions">
+            {% if show_hidden_posts %}
+            <a href="{{ url_for('profile.hidden_posts_statement', show_hidden_posts=False) }}">Hide deleted posts</a>
+            {% else %}
+            <a href="{{ url_for('profile.hidden_posts_statement', show_hidden_posts=True) }}">Show deleted posts</a>
+            {% endif %}
+        </div>
+        <div class="inner-posts-block">
+        {% for post in visible_posts %}
+            <div class="post block-post" id="{{ post.id }}">
+                {% set title_default = 'User\'s post' %}
+                {% if post['is_reposted'] %}
+                <h3 style="display:flex;align-items:center;gap:0.2rem;margin-bottom:0.6rem">
+                    Reposted from {{ post['reference_username'] }}'s message
+                    <div style="font-size:small;cursor:help" title="Reposted in {{ post['reposted_at'] }}">[Reposted {{ post['reposted_at_shorten'] }} ago]</div>
+                </h3>
+                {% endif %}
+                <h3 style="display:flex;align-items:center;gap:0.2rem;margin-bottom:0.6rem">
+                    {{ post['title'] }}
+                    <div style="font-size:small;cursor:help" title="Published in {{ post['created_at'] }}">[Published {{ post['created_at_shorten'] }} ago]</div>
+                    {% if post['is_edited'] %}
+                    • <div style="font-size:small;cursor:help" title="Edited in {{ post['edited_at'] }}">[Edited {{ post['edited_at_shorten'] }} ago]</div>
+                    {% endif %}
+                    {% if post['is_deleted'] %}
+                    • <div style="font-size:small;cursor:help" title="Deleted in {{ post['deleted_at'] }}">[Deleted {{ post['deleted_at_shorten'] }} ago]</div>
+                    {% endif %}
+                </h3>
+                <div></div>
+                {{ post['content']|safe }}
+                <div class="action-buttons">
+                    {% if self_profile %}
+                    <div>
+                        {% if post['is_deleted']%}
+                        <a href="{{ url_for('posts.return_post_form', id=post['id']) }}" title="Return">
+                            <img src="{{ url_for('static', filename='images/buttons/return.png') }}" alt="">
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('posts.delete_post_form', id=post['id']) }}" title="Remove">
+                            <img src="{{ url_for('static', filename='images/buttons/trash-can.png') }}" alt="">
+                        </a>
+                        {% endif %}
+                        {% if not post['is_reposted'] %}
+                        <a href="{{ url_for('posts.edit_post_form', id=post['id']) }}" title="Edit">
+                            <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="">
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <a href="{{ url_for('posts.repost_form', id=post['id']) }}" title="Repost">
+                        <img src="{{ url_for('static', filename='images/buttons/reply.png') }}" alt="">
+                    </a>
+                    <a href="{{ url_for('posts.like_post_form', id=post['id']) }}" title="Like">
+                        {% if post['is_liked_by_current_user'] %}
+                        <img src="{{ url_for('static', filename='images/buttons/heart_full.png') }}" alt="">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/buttons/heart.png') }}" alt="">
+                        {% endif %}
+                        <span>{{ post['likes_count'] }}</span>
+                    </a>
+                </div>
+                {% if post['comments'] %}
+                <h3>Comments:</h3>
+                <div class="comments">
+                    {% for comment in post['comments'] %}
+                    <div class="comment">
+                        <img class='comment-author' src="{{ url_for('static', filename='images/profile/' + comment['author']['picture'])}}" alt="">
+                        <div>
+                            <div class="small-text" style="display:flex;flex-direction:row; gap:0.4rem">
+                                <div>{{ comment['author']['username'] }}</div> • 
+                                <div title="Commented in {{ comment['created_at_shorten'] }}" style="cursor:help">Commented {{ comment['created_at'] }} ago</div>
+                                {% if comment['is_migrated'] %}<div title="This usually indicates that the comment was made on an earlier repost, before the original post was edited and reposted again." style="cursor:help"> • Written before repost migrated</div>{% endif %}
+                                {% if comment['is_edited'] %} • <img class='edited-picture' src="{{ url_for('static', filename='images/buttons/edit.png')}}" title="Edited at: {{ message['edited_at'] }}"> {% endif %}
+                                <div class="comment-action-buttons action-buttons">
+                                    {% if current_user.id == comment['author']['id'] or self_profile %}
+                                    <a href="{{ url_for('posts.delete_comment', id=comment['id']) }}" title="Remove">
+                                        <img src="{{ url_for('static', filename='images/buttons/trash-can.png') }}" alt="">
+                                    </a>
+                                    {% if current_user.id == comment['author']['id'] %}
+                                    <a href="{{ url_for('posts.edit_comment_form', id=comment['id']) }}" title="Edit">
+                                        <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="">
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {{ comment['content']|safe }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <a class="leave-comment" href="{{ url_for('posts.add_comment_form', post_id=post['id'])}}">
+                    <img class="comments-img" src="{{ url_for('static', filename='images/buttons/comment.png') }}">Leave comment
+                </a>
+            </div>
+        {% else %}
+        <span style="margin-top:1rem">There is no posts D:</span>
+        {% endfor %}
+        
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% if self_profile and this_user.news %}
+<div class="container container-profile">
+    <div class="block news-block">
+        <div class="news">
+            {% for news_item in this_user.news %}
+            {% if news_item.reference_table == "posts" %}
+            {% set url = url_for('friends.friends_profile', friend_id=news_item.reference_author.id) + "#" ~ news_item.reference_id %}
+            {% elif news_item.reference_table == "messages" %}
+            {% set url = url_for('friends.friends_profile', friend_id=news_item.reference_author.id) + "#messenger" %}
+            {% else %}
+            {% set url = url_for('profile.profile') %}
+            {% endif %}
+            <a href="{{ url }}">
+                <div class="news-item">
+                    <span>{{ news_item.title }}</span>
+                    <span>{{ news_item.content }}</span>
+                    <a href="{{ url_for('profile.hide_news_item', id=news_item.id)}}">
+                        <img src="{{ url_for('static', filename='images/buttons/hide.png') }}" alt="">
+                    </a>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

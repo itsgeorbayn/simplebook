@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="block">
+    <form method="POST" action="{{ url_for('friends.invite_friend') }}">
+        {{ form.hidden_tag() }}
+        <h2>Invite friend</h2>
+
+        {% include '_flash.html' %}
+
+        <div class="fields">
+            <div class="field">
+                {{ form.username(placeholder=form.username.label.text) }}
+            </div>
+
+            <div class="field">
+                {% set button_text, href, type = "Send invite", url_for('friends.invite_friend'), "button" %}
+                {% include '_submit.html' %}
+            </div>
+        </div>
+
+        <div class="links words">
+            <a href="{{ url_for('profile.profile') }}">Return to profile</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

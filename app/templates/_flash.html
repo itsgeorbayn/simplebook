@@ -1,0 +1,13 @@
+{# templates/_flash.html #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="alerts">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        <img src="{{ url_for('static', filename='images/status/' + category + '.webp') }}" style="width:20px;height:20px;margin-right:4px">
+        <div class="alert-text">{{ message }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
