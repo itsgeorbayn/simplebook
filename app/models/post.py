@@ -25,7 +25,6 @@ class Post(db.Model):
     reference = db.Column(db.Integer, db.ForeignKey('posts.id'))
     reposted_at = db.Column(db.DateTime)
     
-    tags = relationship('Tag', back_populates='post')
     author = relationship('User', back_populates='post')
     comments = relationship('Comment', back_populates='post')
     
