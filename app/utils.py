@@ -1,6 +1,6 @@
-import re, string, random, uuid, os, smtplib, sys
+import re, string, random, uuid, os, smtplib, sys, requests
 from datetime import timedelta
-from flask import flash, redirect, url_for
+from flask import flash, redirect, url_for, request, jsonify
 from flask_login import current_user
 from functools import wraps
 from bs4 import BeautifulSoup
@@ -142,4 +142,39 @@ def send_email(subject, body, recipient):
         smtp_server.sendmail('georgebaynak860@gmail.com', recipient, msg.as_string())
     
     return True
+
+def upload_to_supabase(file, bucket_name, another_name=None, subdir="users"):
+    headers = {
+        "apikey": os.environ.get("SUPABASE_KEY"),
+        "Authorization": f"Bearer {os.environ.get('SUPABASE_KEY')}",
+        "Content-Type": file.content_type,
+        "x-upsert": "true"
+    }
     
+    filename = another_name if another_name else file.filename
+    storage_path = f"{subdir}/{filename}"
+    url = f"{os.environ.get('SUPABASE_URL')}/storage/v1/object/{bucket_name}/{storage_path}"
+    
+    response = requests.post(url, headers=headers, data=file.read())
+
+    if response.status_code == 200:
+        public_url = f"{os.environ.get('SUPABASE_URL')}/storage/v1/object/public/{bucket_name}/{storage_path}"
+        return {"success": True, "url": public_url}
+    else:
+        return {"success": False, "error": response.text}
+    
+    
+def delete_from_supabase(bucket_name, file_path):
+    headers = {
+        "apikey": os.environ.get("SUPABASE_KEY"),
+        "Authorization": f"Bearer {os.environ.get('SUPABASE_KEY')}",
+    }
+    
+    url = f"{os.environ.get('SUPABASE_URL')}/storage/v1/object/{bucket_name}/{file_path}"
+    
+    response = requests.delete(url, headers=headers)
+
+    if response.status_code == 200:
+        return {"success": True}
+    else:
+        return {"success": False, "error": response.text}

@@ -6,6 +6,7 @@ from app.forms import InviteFriendForm, MessengerForm
 from app.extensions import db, login_manager
 from sqlalchemy import or_, and_
 from datetime import datetime
+import os
 
 friends_bp = Blueprint('friends', __name__, url_prefix='/friends')
 
@@ -111,7 +112,7 @@ def friends_profile():
                 db.session.delete(item)
             db.session.commit()
             
-            return render_template('profile.html', friend_user=friend, form=form, id=current_user.id, prefix="Friend's", friends_profile=True, visible_posts=visible_posts, user_posts=user_posts, body_class='profile', messages=messages_data, current_user_id=current_user.id, **data)
+            return render_template('profile.html', supabase_url=os.environ.get("SUPABASE_URL"), friend_user=friend, form=form, id=current_user.id, prefix="Friend's", friends_profile=True, visible_posts=visible_posts, user_posts=user_posts, body_class='profile', messages=messages_data, current_user_id=current_user.id, **data)
         flash("Can't find this friend, try again later", 'error')
         return redirect(url_for('profile.profile'))
     flash("Can't find this user, try again later", 'error')

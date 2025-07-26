@@ -2,7 +2,7 @@
 <a href="{{ href }}" style="all: unset; cursor: pointer;">
     <div class="friend">
         <div class="friend-image">
-            <img src="{{ url_for('static', filename='images/profile/' + friend['picture']) }}" alt="">
+            <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ friend['picture'] }}" alt="">
         </div>
         <div class="friend-data">
             <div class="small-text username">

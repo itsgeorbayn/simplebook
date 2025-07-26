@@ -9,7 +9,7 @@
         <div class="profile-badge">
             <div>
                 <a href="{{ url_for('profile.update_form', field='picture') }}">
-                    <img src="{{ url_for('static', filename='images/profile/' + picture) }}" alt="">
+                    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ current_user.picture }}" alt="">
                 </a>
             </div>
             <div>
@@ -73,7 +73,7 @@
             {% for invite in invites %}
             <div class="friend">
                 <div class="friend-image">
-                    <img src="{{ url_for('static', filename='images/profile/' + invite['picture']) }}" alt="">
+                    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ invite['picture'] }}" alt="">
                 </div>
                 <div class="friend-data">
                     <div class="small-text username">
@@ -173,7 +173,7 @@
                 <div class="comments">
                     {% for comment in post['comments'] %}
                     <div class="comment">
-                        <img class='comment-author' src="{{ url_for('static', filename='images/profile/' + comment['author']['picture'])}}" alt="">
+                        <img class='comment-author' src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ comment['author']['picture'] }}" alt="">
                         <div>
                             <div class="small-text" style="display:flex;flex-direction:row; gap:0.4rem">
                                 <div>{{ comment['author']['username'] }}</div> • 

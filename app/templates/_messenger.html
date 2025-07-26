@@ -3,12 +3,13 @@
         {% for message in messages %}
         <div class="message" data-message-id="{{ message['id'] }}" data-message-is-forwarded="{{ message['is_forwarded'] }}" data-sender-id="{{ message['sender'] }}">
             <div>
-                <img class="profile-picture" src="{{ url_for('static', filename='images/profile/' + message['sender_picture'])}}" alt="">
+                <img class="profile-picture" src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ message['sender_picture'] }}" alt="">
+                
             </div>
             <div>
                 {% if message['is_forwarded'] %}
                 <div class="small-text" style="font-style: italic">
-                    <div class="is-forwarded" title="Forwarded at {{ message['forwarded_at'] }}">Forwarded from <img class='forwarded-picture' src="{{ url_for('static', filename='images/profile/' + message['forwarded_message_author_picture'])}}" alt=""> {{ message['forwarded_message_author'] }}</div>
+                    <div class="is-forwarded" title="Forwarded at {{ message['forwarded_at'] }}">Forwarded from <img class='forwarded-picture' src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ message['forwarded_message_author_picture'] }}" alt=""> {{ message['forwarded_message_author'] }}</div>
                 </div>
                 {% endif %}
                 <div class="small-text">

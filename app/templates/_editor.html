@@ -19,7 +19,7 @@
                 selector: '#editor',
                 plugins: 'link image code lists',
                 toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
-                images_upload_url: '{{ url_for("posts.upload_image") }}',
+                images_upload_url: '{{ url_for("profile.upload_image", bucket_name="posts") }}',
                 automatic_uploads: true,
                 images_upload_credentials: true,
 

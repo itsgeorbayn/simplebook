@@ -11,9 +11,9 @@
 <td style="display:flex;align-items:center;gap:1rem">
     {% if override_as_form %}
     <input type="file" id="fileInput" name="picture" style="display:none" accept="image/*">
-    <img src="{{ url_for('static', filename='images/profile/' + unit.picture) }}" alt="User Picture" class="admin-panel-user-picture" id="profilePic">
+    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ unit.picture }}" alt="User Picture" class="admin-panel-user-picture" id="profilePic">
     {% else %}
-    <img src="{{ url_for('static', filename='images/profile/' + unit.picture) }}" alt="User Picture" class="admin-panel-user-picture">  
+    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ unit.picture }}" alt="User Picture" class="admin-panel-user-picture">  
     {% endif %}
     {{ unit.picture }}
 </td>

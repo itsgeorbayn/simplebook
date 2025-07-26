@@ -52,26 +52,26 @@ def create_post_submit():
         
     return redirect(url_for('profile.profile'))
     
-@posts_bp.route('/upload-image', methods=['POST'])
-@login_required
-@require_not_banned
-def upload_image():
-    file = request.files.get('file')
-    if not file:
-        return jsonify({'error': 'No file uploaded'}), 400
+# @posts_bp.route('/upload-image', methods=['POST'])
+# @login_required
+# @require_not_banned
+# def upload_image():
+#     file = request.files.get('file')
+#     if not file:
+#         return jsonify({'error': 'No file uploaded'}), 400
 
-    filename = secure_filename(file.filename)
-    ext = os.path.splitext(filename)[1].lower()
+#     filename = secure_filename(file.filename)
+#     ext = os.path.splitext(filename)[1].lower()
 
-    if ext not in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
-        flash("Invalid file format", 'error')
-        return redirect(url_for('create_post'))
+#     if ext not in ['.jpg', '.jpeg', '.png', '.gif', '.webp']:
+#         flash("Invalid file format", 'error')
+#         return redirect(url_for('create_post'))
 
-    unique_name = f"{uuid.uuid4().hex}{ext}"
-    save_path = f'app/static/uploads/{unique_name}'
-    file.save(save_path)
+#     unique_name = f"{uuid.uuid4().hex}{ext}"
+#     save_path = f'app/static/uploads/{unique_name}'
+#     file.save(save_path)
 
-    file_url = url_for('static', filename=f'uploads/{unique_name}', _external=False)
+#     file_url = url_for('static', filename=f'uploads/{unique_name}', _external=False)
     return jsonify({'location': file_url})
 
 @posts_bp.route('/add_comment', methods=['GET'])

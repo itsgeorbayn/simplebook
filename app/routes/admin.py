@@ -47,7 +47,7 @@ def panel():
             if admin.list_messages:
                 params = db.session.query(Message).order_by(Message.id).all()
         
-    return render_template('admin_panel.html', selected_action=selected_action, params=params, comments=comments, body_class='admin', admin=admin, show_full_message=show_full_message)
+    return render_template('admin_panel.html', supabase_url=os.environ.get("SUPABASE_URL"), selected_action=selected_action, params=params, comments=comments, body_class='admin', admin=admin, show_full_message=show_full_message)
     
 
 @admin_bp.route('/update/user', methods=['POST'])
