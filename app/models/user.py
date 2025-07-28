@@ -33,7 +33,7 @@ class User(db.Model, UserMixin):
     
     post = relationship('Post', back_populates='author', order_by="Post.created_at")
     comments = relationship('Comment', back_populates='author', order_by="Comment.created_at")
-    admin_permissions = relationship('AdminPermission', back_populates='user')
+    admin_permissions = relationship('AdminPermission', back_populates='user', uselist=False)
     news = relationship('NewsItem', order_by="NewsItem.last_update", back_populates='recipient')
     reports = relationship('Report', back_populates='author')
     
