@@ -540,6 +540,7 @@ div.send-message {
     margin-right: 0.6rem;
     border-radius: 50%;
     border: 2px solid #ccc;
+    object-fit: cover;
 }
 
 .message div:first-child img {
