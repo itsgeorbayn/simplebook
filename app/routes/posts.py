@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, current_app, jsonify, request, session
 from flask_login import login_user, login_required, logout_user, current_user
 from app.forms import CreatePostForm, AddCommentForm
-from app.models import User, Post, Comment, Like, UserVerification
+from app.models import User, Post, Comment, Like, UserVerification, Report
 from app.extensions import db, login_manager
 from app.utils import to_sentence_case, is_email_or_username, generate_random_text, Symbols, check_verify_status, require_not_banned, fix_img_src_paths
 from datetime import datetime
@@ -289,7 +289,7 @@ def edit_post(id):
         flash("This post cannot be edited!", 'error')
     return redirect(url_for('profile.profile'))
 
-@posts_bp.route('/edit_comment/<int:id>', methods=['GET'])
+@posts_bp.route('/edit/comment/<int:id>', methods=['GET'])
 @login_required
 @require_not_banned
 def edit_comment_form(id):
@@ -308,7 +308,7 @@ def edit_comment_form(id):
     flash("This comment cannot be edited!", 'error')
     return redirect(url_for('profile.profile'))
 
-@posts_bp.route('/edit_comment/<int:id>', methods=['POST'])
+@posts_bp.route('/edit/comment/<int:id>', methods=['POST'])
 @login_required
 @require_not_banned
 def edit_comment(id):
@@ -337,7 +337,7 @@ def edit_comment(id):
         flash("This comment cannot be edited!", 'error')
     return redirect(url_for('profile.profile'))
 
-@posts_bp.route('/delete_comment/<id>', methods=['GET'])
+@posts_bp.route('/delete/comment/<id>', methods=['GET'])
 @login_required
 @require_not_banned
 def delete_comment(id):
@@ -369,3 +369,61 @@ def delete_comment(id):
     if current_user.id == post_author_id:
         return redirect(url_for('profile.profile'))
     return redirect(url_for('friends.friends_profile', friend_id=post_author_id))
+
+@posts_bp.route('/report/post/<int:id>', methods=['GET'])
+@login_required
+@require_not_banned
+def report_post(id):
+    verify_status = check_verify_status()
+    if verify_status:
+        return verify_status
+    
+    post = db.session.get(Post, id)
+        
+    if not post:
+        flash("Can\'t find this post", 'error')
+    elif post.author_id == current_user.id:
+        flash("You can\'t report your own post.", 'error')
+    elif post.is_deleted:
+        flash("This post is deleted.", 'error')
+    else:
+        prev_report = db.session.query(Report).filter_by(author_id=current_user.id, reference_table="posts", reference_id=post.id).first()
+        if prev_report:
+            db.session.delete(prev_report)
+            flash("Successfully unreported", 'success')
+        else:
+            report = Report(author_id=current_user.id, reference_table="posts", reference_id=post.id)
+            db.session.add(report)
+            flash("Successfully reported", 'success')
+        db.session.commit()
+    
+    return redirect(session.get('history', [])[-2])
+
+@posts_bp.route('/report/comment/<int:id>', methods=['GET'])
+@login_required
+@require_not_banned
+def report_comment(id):
+    verify_status = check_verify_status()
+    if verify_status:
+        return verify_status
+    
+    comment = db.session.get(Comment, id)
+        
+    if not comment:
+        flash("Can\'t find this comment", 'error')
+    elif comment.author_id == current_user.id:
+        flash("You can\'t report your own comment.", 'error')
+    elif comment.is_deleted:
+        flash("This comment is deleted.", 'error')
+    else:
+        prev_report = db.session.query(Report).filter_by(author_id=current_user.id, reference_table="comments", reference_id=comment.id).first()
+        if prev_report:
+            db.session.delete(prev_report)
+            flash("Successfully unreported", 'success')
+        else:
+            report = Report(author_id=current_user.id, reference_table="comments", reference_id=comment.id)
+            db.session.add(report)
+            flash("Successfully reported", 'success')
+        db.session.commit()
+    
+    return redirect(session.get('history', [])[-2])

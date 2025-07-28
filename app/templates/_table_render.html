@@ -184,6 +184,23 @@
     </div>
 </td>
 {% endif %}
+{% elif selected_action == 'list_reports' %}
+<td>{{ unit.id }}</td>
+<td>{{ unit.author.username }}</td>
+<td>{{ unit.reference_table }}.{{ unit.reference_id }}</td>
+<td>{{ unit.target.title }}</td>
+<td>{{ unit.target.content }}</td>
+<td>{{ unit.created_at_shorten }}</td>
+<td>
+    <div style="display:flex;gap:0.4rem;flex-direction:column;align-items:center">
+        <a href="{{ url_for(unit.delete_endpoint, id=unit.target.id, reported_target=unit) }}" style="width: 20px" class="settings">
+            <img src="{{ url_for('static', filename='images/buttons/trash-can.png') }}" title="Delete target" class="save-settings settings">
+        </a>
+        <a href="{{ url_for('admin.skip_report', reported_target=unit) }}" style="width: 20px" class="settings">
+            <img src="{{ url_for('static', filename='images/buttons/next.png') }}" title="Skip and delete report" class="save-settings settings">
+        </a>
+    </div>
+</td>
 {% endif %}
 <script>
     document.getElementById('profilePic').addEventListener('click', function () {

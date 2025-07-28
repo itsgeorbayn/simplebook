@@ -1,10 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, session, request
 from flask_migrate import Migrate
 import sys, os, logging
 from .routes import *
 from .extensions import db, jwt, login_manager
-from dotenv import load_dotenv
-load_dotenv()
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import Config
@@ -16,10 +14,23 @@ def create_app():
     
     logging.basicConfig(level=logging.DEBUG)
     
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        return jsonify(error=str(e)), 500
+    # @app.errorhandler(Exception)
+    # def handle_exception(e):
+    #     return jsonify(error=str(e)), 500
     
+    @app.before_request
+    def track_history():
+        if 'history' not in session:
+            session['history'] = []
+            
+        if not request.path.startswith('/static') and not request.path.startswith('/messages/live') and 'favicon.ico' not in request.path:
+            session['history'].append(request.full_path)
+            session['history'] = session['history'][-10:]
+            
+    @app.context_processor
+    def inject_common_template_variables():
+        return dict(history=session.get('history', []))
+
     app.jinja_env.globals['getattr'] = getattr  
     
     app.config.from_object(Config)

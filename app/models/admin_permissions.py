@@ -27,6 +27,9 @@ class AdminPermission(db.Model):
     edit_messages = db.Column(db.Boolean, default=False)
     remove_messages = db.Column(db.Boolean, default=False)
     
+    list_reports = db.Column(db.Boolean, default=True)
+    close_reports = db.Column(db.Boolean, default=False)
+    
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
     last_edited = db.Column(db.DateTime, default=datetime.now())
     
@@ -38,6 +41,7 @@ class AdminPermission(db.Model):
             'Show posts': {'name': 'list_posts', 'allow': self.list_posts, },
             'Show messages': {'name': 'list_messages', 'allow': self.list_messages, },
             'Show admins': {'name': 'list_admins', 'allow': self.list_admins, },
+            'Moderate panel': {'name': 'list_reports', 'allow': self.list_reports, },
         }
         
         return {

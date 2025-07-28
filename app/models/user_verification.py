@@ -1,6 +1,6 @@
 from app.extensions import db
 from sqlalchemy.orm import relationship
-from .comment import Comment
+from .comments import Comment
 import uuid
 from datetime import datetime, timedelta
 

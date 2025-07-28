@@ -90,6 +90,15 @@
                     <th>Is forwarded</th>
                     <th>Is edited</th>
                     <th>Edit</th>
+                    
+                    {% elif selected_action == 'list_reports' %}
+                    <th>ID</th>
+                    <th>Author</th>
+                    <th>Reference Table.ID</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Created at</th>
+                    <th>Actions</th>
                     {% endif %}
                 </tr>
             </thead>

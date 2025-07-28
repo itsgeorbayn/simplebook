@@ -7,7 +7,8 @@ from sqlalchemy.orm import relationship, column_property, foreign, aliased
 from sqlalchemy import desc, case, select, func, and_, or_
 from datetime import datetime, timedelta
 from app.utils import format_short_delta, flatten
-from .comment import Comment
+from .comments import Comment
+from .report import Report
 from .friendship import Friendship
 from .admin_permissions import AdminPermission
 from .like import Like
@@ -34,6 +35,7 @@ class User(db.Model, UserMixin):
     comments = relationship('Comment', back_populates='author', order_by="Comment.created_at")
     admin_permissions = relationship('AdminPermission', back_populates='user')
     news = relationship('NewsItem', order_by="NewsItem.last_update", back_populates='recipient')
+    reports = relationship('Report', back_populates='author')
     
     reposts = relationship("Post", primaryjoin="and_(User.id == Post.author_id, Post.is_reposted == True, Post.is_deleted == False)", overlaps="post,author")
     
@@ -88,7 +90,8 @@ class User(db.Model, UserMixin):
                     'deleted_at': post.deleted_at.strftime("%Y/%m/%d %I:%M %p") if get_deleted_posts and post.is_deleted else None,
                     'deleted_at_shorten': format_short_delta(datetime.now() - post.deleted_at) if get_deleted_posts and post.is_deleted else None,
                     'is_liked_by_current_user': bool(is_liked),
-                    'likes_count': db.session.query(Like).filter_by(post_id=post.id).count()
+                    'likes_count': db.session.query(Like).filter_by(post_id=post.id).count(),
+                    'is_reported': db.session.query(Report).filter_by(author_id=current_user.id, reference_table="posts", reference_id=post.id).first()
                 })
         return result
     

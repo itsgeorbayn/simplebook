@@ -160,6 +160,16 @@ Profile - SimpleBook
                         </a>
                         {% endif %}
                     </div>
+                    {% else %}
+                    {% if post['is_reported'] %}
+                    <a href="{{ url_for('posts.report_post', id=post['id']) }}" title="Unreport">
+                        <img src="{{ url_for('static', filename='images/buttons/unreport.png') }}" alt="">
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('posts.report_post', id=post['id']) }}" title="Report">
+                        <img src="{{ url_for('static', filename='images/buttons/report.png') }}" alt="">
+                    </a>
+                    {% endif %}
                     {% endif %}
                     <a href="{{ url_for('posts.repost_form', id=post['id']) }}" title="Repost">
                         <img src="{{ url_for('static', filename='images/buttons/reply.png') }}" alt="">
@@ -193,6 +203,19 @@ Profile - SimpleBook
                                     {% if current_user.id == comment['author']['id'] %}
                                     <a href="{{ url_for('posts.edit_comment_form', id=comment['id']) }}" title="Edit">
                                         <img src="{{ url_for('static', filename='images/buttons/edit.png') }}" alt="">
+                                    </a>
+                                    {% else %}
+                                    {% endif %}
+                                    {% endif %}
+                                    
+                                    {% if current_user.id != comment['author']['id'] %}
+                                    {% if comment['is_reported'] %}
+                                    <a href="{{ url_for('posts.report_comment', id=comment['id']) }}" title="Report">
+                                        <img src="{{ url_for('static', filename='images/buttons/report.png') }}" alt="">
+                                    </a>
+                                    {% else %}
+                                    <a href="{{ url_for('posts.report_comment', id=comment['id']) }}" title="Unreport">
+                                        <img src="{{ url_for('static', filename='images/buttons/unreport.png') }}" alt="">
                                     </a>
                                     {% endif %}
                                     {% endif %}

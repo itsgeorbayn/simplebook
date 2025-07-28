@@ -34,4 +34,10 @@
     <div class="field">
         {{ form.submit(value=header if header else "Editor") }}
     </div>
+    
+    <div style="margin-top:0.6rem; display:flex; justify-content:space-between">
+        
+        <a href="{{ history[-2]}}">Return back</a>
+        <a href="{{ url_for('profile.profile') }}">Return to profile</a>
+    </div>
 </div>

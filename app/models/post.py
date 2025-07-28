@@ -1,6 +1,7 @@
 from app.extensions import db
 from sqlalchemy.orm import relationship
-from .comment import Comment
+from flask_login import current_user
+from .comments import Comment
 from .news import NewsItem
 from datetime import datetime
 from app.utils import format_short_delta
@@ -29,6 +30,7 @@ class Post(db.Model):
     comments = relationship('Comment', back_populates='post')
     
     def get_comments(self):
+        from .report import Report
         return [({
             'id': comment.id,
             'author': {
@@ -40,6 +42,7 @@ class Post(db.Model):
             'created_at': format_short_delta(datetime.now() - comment.created_at),
             'created_at_shorten': comment.created_at.strftime("%Y/%m/%d %I:%M %p"),
             'is_migrated': comment.is_migrated,
+            'is_reported': db.session.query(Report).filter_by(author_id=current_user.id, reference_table="comments", reference_id=comment.id).first()
         }) for comment in self.comments if not comment.is_deleted]
     
     def mark_as_deleted(self):

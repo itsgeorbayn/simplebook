@@ -1,6 +1,6 @@
 from app.extensions import db
 from sqlalchemy.orm import relationship
-from .comment import Comment
+from .comments import Comment
 from datetime import datetime
 from app.utils import format_short_delta
 

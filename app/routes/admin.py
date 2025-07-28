@@ -1,13 +1,20 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, current_app, request, jsonify
 from flask_login import login_user, login_required, logout_user, current_user, AnonymousUserMixin
 from app.forms import LoginForm, RegisterForm, VerificationForm, CreatePostForm, MessengerForm
-from app.models import User, UserVerification, AdminPermission, Post, Comment, Message
+from app.models import User, UserVerification, AdminPermission, Post, Comment, Message, Report
 from app.extensions import db, login_manager
 from app.utils import to_sentence_case, check_verify_status, Symbols, translate_checkbox
 from datetime import datetime, timedelta
 import os, uuid
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+
+MODEL_MAP = {
+    'Post': Post,
+    'Comment': Comment,
+    'Report': Report
+}
 
 @admin_bp.before_request
 def before():
@@ -46,6 +53,10 @@ def panel():
         case "list_messages":
             if admin.list_messages:
                 params = db.session.query(Message).order_by(Message.id).all()
+                
+        case "list_reports":
+            if admin.list_reports:
+                params = db.session.query(Report).order_by(Report.id).all()
         
     return render_template('admin_panel.html', supabase_url=os.environ.get("SUPABASE_URL"), selected_action=selected_action, params=params, comments=comments, body_class='admin', admin=admin, show_full_message=show_full_message)
     
@@ -119,16 +130,35 @@ def update_admin_info():
 
 @admin_bp.route('/delete/post/<int:id>')
 @login_required
-def delete_post_form(id):
+def delete_post_form(id, selected_action='list_posts'):
     post = db.session.get(Post, id)
     if post:
         post.mark_as_deleted()
         db.session.commit()
         
-        flash("Post has been successfully deleted!", 'success')
+        flash("Post successfully deleted!", 'success')
     else:
         flash("Post has not found.", 'error')
-    return redirect(url_for('admin.panel', selected_action='list_posts'))
+        
+    reported_target = request.args.get('reported_target')
+    
+    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        print(1)
+        content = reported_target[1:-1]
+        model_name, object_id = content.split()
+
+        Model = MODEL_MAP.get(model_name)
+        print(content)
+        obj = db.session.get(Model, int(object_id))
+        
+        if obj:
+            print(2)
+            db.session.delete(obj)
+            db.session.commit()
+        
+        return redirect(url_for('admin.panel', selected_action='list_reports'))
+    
+    return redirect(url_for('admin.panel', selected_action=selected_action))
 
 @admin_bp.route('/return/post/<int:id>')
 @login_required
@@ -205,6 +235,21 @@ def delete_comment_form(id):
         flash("Comment successfully deleted!", 'success')
     else:
         flash("Comment has not found.", 'error')
+    
+    reported_target = request.args.get('reported_target')
+    
+    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        content = reported_target[1:-1]
+        model_name, object_id = content.split()
+
+        Model = MODEL_MAP.get(model_name)
+        obj = db.session.get(Model, int(object_id))
+        
+        if obj:
+            db.session.delete(obj)
+            db.session.commit()
+        
+        return redirect(url_for('admin.panel', selected_action='list_reports'))
     
     edit = request.args.get('edit')
     return redirect(url_for('admin.panel', selected_action='list_posts', edit=edit))
@@ -375,7 +420,6 @@ def edit_message_submit(id):
         flash("Can't edit this message", 'error')
     return redirect(url_for('admin.panel', selected_action='list_messages', edit=edit, show_full_message=show_full_message))
 
-
 @admin_bp.route('/admins/promote/<int:id>')
 @login_required
 def admin_promote(id):
@@ -391,7 +435,6 @@ def admin_promote(id):
         flash("User successfully promoted to admin with default rights", 'success')
     return redirect(url_for('admin.panel', selected_action='list_users', edit=edit))
 
-
 @admin_bp.route('/admins/demote/<int:id>')
 @login_required
 def admin_demote(id):
@@ -406,3 +449,22 @@ def admin_demote(id):
         user.demote_admin()
         flash("User successfully demoted from admin", 'success')
     return redirect(url_for('admin.panel', selected_action='list_users', edit=edit))
+
+@admin_bp.route('/skip_report')
+@login_required
+def skip_report():
+    reported_target = request.args.get('reported_target')
+    
+    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        content = reported_target[1:-1]
+        model_name, object_id = content.split()
+
+        Model = MODEL_MAP.get(model_name)
+        print(content)
+        obj = db.session.get(Model, int(object_id))
+        
+        if obj:
+            print(2)
+            db.session.delete(obj)
+            db.session.commit()
+    return redirect(url_for('admin.panel', selected_action='list_reports'))
