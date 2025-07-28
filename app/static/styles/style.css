@@ -625,6 +625,7 @@ img.comment-author {
     height: 2rem;
     border: 1px solid #ccc;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .small-text .is-forwarded {

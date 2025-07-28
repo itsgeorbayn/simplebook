@@ -14,7 +14,11 @@ Profile - SimpleBook
         <div class="profile-badge">
             <div>
                 <a href="{{ url_for('profile.update_form', field='picture') }}">
+                    {% if self_profile %}
                     <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ current_user.picture }}" alt="">
+                    {% elif friend_profile %}
+                    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ friend.picture }}" alt="">
+                    {% endif %}
                 </a>
             </div>
             <div>
@@ -45,7 +49,6 @@ Profile - SimpleBook
                         Remove friend
                     </button>
                 </form>
-                <a href="{{ url_for('index.index_page') }}">Message friend</a>
             {% endif %}
         </div>
     </div>
