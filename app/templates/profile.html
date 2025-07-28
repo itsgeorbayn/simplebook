@@ -16,8 +16,8 @@ Profile - SimpleBook
                 <a href="{{ url_for('profile.update_form', field='picture') }}">
                     {% if self_profile %}
                     <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ current_user.picture }}" alt="">
-                    {% elif friend_profile %}
-                    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ friend.picture }}" alt="">
+                    {% elif friends_profile %}
+                    <img src="{{ supabase_url }}/storage/v1/object/public/avatars/users/{{ friend_user.picture }}" alt="">
                     {% endif %}
                 </a>
             </div>
