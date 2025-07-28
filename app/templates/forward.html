@@ -13,6 +13,7 @@
             <form method="POST" action="{{ url_for('messages.forward_message', id=id, friend_id=friend['id']) }}">
                 <button class="unset">
                     {% set href = url_for('messages.forward_message', id=id) %}
+                    {% set supabase_url = supabase_url %}
                     {% include '_friend.html' %}     
                 </button> 
             </form>

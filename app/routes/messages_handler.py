@@ -6,6 +6,7 @@ from app.extensions import db, login_manager
 from app.forms import MessengerForm
 from sqlalchemy import or_, and_
 from datetime import datetime
+import os
 
 messages_handler_bp = Blueprint('messages', __name__, url_prefix='/messages')
 
@@ -107,7 +108,7 @@ def forward_message_form(id):
     for friend in friend_list:
         updated_friend_list.append(dict(friend[0].to_dict(), is_accepted=friend[1]))
     
-    return render_template('forward.html', id=id, friends=updated_friend_list)
+    return render_template('forward.html', supabase_url=os.environ.get("SUPABASE_URL"), id=id, friends=updated_friend_list)
 
 @messages_handler_bp.route('/forward/<id>', methods=['POST'])
 @login_required

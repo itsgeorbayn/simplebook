@@ -63,6 +63,7 @@ Profile - SimpleBook
         <div class="friends">
             {% for friend in friends %}
                 {% set href = url_for('friends.friends_profile', friend_id=friend['id']) %}
+                {% set supabase_url = supabase_url %}
                 {% include '_friend.html' %}       
             {% endfor %}
         </div>
