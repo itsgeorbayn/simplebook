@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Edit Message - SimpleBook{% endblock %}
+
 {% block content %}
 <form method="POST" action="{{ other_action if other_action else url_for('messages.edit_message', id=id, friend_id=friend_id) }}">
     {{ form.hidden_tag() }}

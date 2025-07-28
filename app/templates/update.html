@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Update {{ field }} - SimpleBook{% endblock %}
+
 {% block content %}
 <form method="POST" action="{{ url_for('profile.update_submit', field=field) }}" enctype="multipart/form-data">
     {{ form.hidden_tag() }}

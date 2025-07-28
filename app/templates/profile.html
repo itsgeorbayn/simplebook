@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block title %}
+{% if friends_profile %}Friend's{% endif %}
+Profile - SimpleBook
+{% endblock %}
+
 {% block content %}
 <div class="container container-profile">
     <div class="block profile-block">

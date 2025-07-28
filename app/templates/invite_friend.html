@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Invite Friend - SimpleBook{% endblock %}
+
 {% block content %}
 <div class="block">
     <form method="POST" action="{{ url_for('friends.invite_friend') }}">

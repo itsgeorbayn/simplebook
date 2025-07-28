@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/button.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="{{ url_for('static', filename='images/buttons/logo.png') }}" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-    <title>Document</title>
+    <title>{% block title %}SimpleBook{% endblock %}</title>
     <style>
         body {
             background-image: url("{{ url_for('static', filename='images/bg.jpg') }}");
