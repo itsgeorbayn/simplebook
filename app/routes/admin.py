@@ -65,27 +65,31 @@ def panel():
 @login_required
 def update_user_info():
     form = request.form
-    files = request.files
     
+    files = request.files
+    admin = db.session.get(AdminPermission, current_user.id)
     edit = request.args.get('edit')
     user = User.query.get(edit)
     
     fields = user.find_updated_fields(form, files)
     
-    for field in fields:
-        if field == 'picture':
-            picture = files.get('picture')
-            filename = uuid.uuid4().hex[:16] + os.path.splitext(picture.filename)[1]
-            if user.picture != "default.png":
-                os.remove(f'app/static/images/profile/{user.picture}')
-            picture.save(f'app/static/images/profile/{filename}')
-            user.picture = filename
-        elif field == 'username':
-            username = form.get('username')
-            if db.session.query(User).filter_by(username=username).first():
-                flash("Username already exists", 'error')
-                return redirect(url_for('profile.update_form', field=field))
-            user.username = username
+    if not admin.edit_users:
+        flash("You have no rights to do it.", 'error')
+    else:
+        for field in fields:
+            if field == 'picture':
+                picture = files.get('picture')
+                filename = uuid.uuid4().hex[:16] + os.path.splitext(picture.filename)[1]
+                if user.picture != "default.png":
+                    os.remove(f'app/static/images/profile/{user.picture}')
+                picture.save(f'app/static/images/profile/{filename}')
+                user.picture = filename
+            elif field == 'username':
+                username = form.get('username')
+                if db.session.query(User).filter_by(username=username).first():
+                    flash("Username already exists", 'error')
+                    return redirect(url_for('profile.update_form', field=field))
+                user.username = username
     db.session.commit()
     
     return redirect(url_for('admin.panel', selected_action='list_users', edit=edit))
@@ -97,13 +101,18 @@ def update_post_info():
     
     edit = request.args.get('edit')
     post = Post.query.get(edit)
+    admin = db.session.get(AdminPermission, current_user.id)
     
     fields = post.find_updated_fields(form)
     
-    for field in fields:
-        if field == 'title':
-            title = form.get('title')
-            post.title = title
+    if not admin.edit_posts:
+        flash("You have no rights to do it.", 'error')
+    else:
+        for field in fields:
+            if field == 'title':
+                title = form.get('title')
+                post.title = title
+        flash("You have no rights to do it.", 'error')
     db.session.commit()
         
     return redirect(url_for('admin.panel', selected_action='list_posts', edit=edit))
@@ -119,11 +128,15 @@ def update_admin_info():
     
     edit = request.args.get('edit')
     admin = AdminPermission.query.get(edit)
-    
     fields = admin.find_updated_fields(form)
-    for key in fields:
-        setattr(admin, key, fields[key])
-    db.session.commit()
+    
+    if not admin.edit_admins:
+        flash("You have no rights to do it.", 'error')
+    else:
+        for key in fields:
+            setattr(admin, key, fields[key])
+        flash("Successufully edited", 'success')
+        db.session.commit()
     
     return redirect(url_for('admin.panel', selected_action='list_admins', edit=edit))
 
@@ -132,30 +145,25 @@ def update_admin_info():
 @login_required
 def delete_post_form(id, selected_action='list_posts'):
     post = db.session.get(Post, id)
-    if post:
+    admin = db.session.get(AdminPermission, current_user.id)
+    reported_target = request.args.get('reported_target')
+    
+    if reported_target and (not admin.close_reports or not admin.remove_posts):
+        flash("You have no rights to do it.", 'error')
+        return redirect(url_for('admin.panel', selected_action='list_reports'))
+    if not admin.remove_posts:
+        flash("You have no rights to do it.", 'error')
+    elif post:
         post.mark_as_deleted()
         db.session.commit()
-        
         flash("Post successfully deleted!", 'success')
     else:
         flash("Post has not found.", 'error')
-        
-    reported_target = request.args.get('reported_target')
     
-    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
-        print(1)
-        content = reported_target[1:-1]
-        model_name, object_id = content.split()
-
-        Model = MODEL_MAP.get(model_name)
-        print(content)
-        obj = db.session.get(Model, int(object_id))
+    if admin.remove_comments and reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        close_report(reported_target)
         
-        if obj:
-            print(2)
-            db.session.delete(obj)
-            db.session.commit()
-        
+        flash("Report successfully closed.", 'success')
         return redirect(url_for('admin.panel', selected_action='list_reports'))
     
     return redirect(url_for('admin.panel', selected_action=selected_action))
@@ -164,7 +172,11 @@ def delete_post_form(id, selected_action='list_posts'):
 @login_required
 def return_post_form(id):
     post = db.session.get(Post, id)
-    if post:
+    admin = db.session.get(AdminPermission, current_user.id)
+    
+    if not admin.remove_posts:
+        flash("You have no rights to do it.", 'error')
+    elif post:
         post.mark_as_returned()
         db.session.commit()
         
@@ -226,29 +238,24 @@ def edit_post(id):
 def delete_comment_form(id):
     admin = db.session.get(AdminPermission, current_user.id)
     comment = db.session.get(Comment, id)
+    reported_target = request.args.get('reported_target')
+    
+    if reported_target and (not admin.close_reports or not admin.remove_comments):
+        flash("You have no rights to do it.", 'error')
+        return redirect(url_for('admin.panel', selected_action='list_reports'))
     if not admin.remove_comments:
         flash("You have no rights to do it.", 'error')
     elif comment:
         comment.mark_as_deleted()
         db.session.commit()
-        
         flash("Comment successfully deleted!", 'success')
     else:
         flash("Comment has not found.", 'error')
     
-    reported_target = request.args.get('reported_target')
-    
-    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
-        content = reported_target[1:-1]
-        model_name, object_id = content.split()
-
-        Model = MODEL_MAP.get(model_name)
-        obj = db.session.get(Model, int(object_id))
+    if admin.remove_comments and reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        close_report(reported_target)
         
-        if obj:
-            db.session.delete(obj)
-            db.session.commit()
-        
+        flash("Report successfully closed.", 'success')
         return redirect(url_for('admin.panel', selected_action='list_reports'))
     
     edit = request.args.get('edit')
@@ -364,8 +371,11 @@ def delete_message_form(id):
     
     edit = request.args.get('edit')
     show_full_message = request.args.get('show_full_message')
+    admin = db.session.get(AdminPermission, current_user.id)
     
-    if message: 
+    if not admin.remove_messages:
+        flash("You have no rights to do it.", 'error')
+    elif message: 
         message.mark_as_deleted()
         db.session.commit()
         
@@ -382,7 +392,11 @@ def return_message_form(id):
     edit = request.args.get('edit')
     show_full_message = request.args.get('show_full_message')
     
-    if message:
+    admin = db.session.get(AdminPermission, current_user.id)
+    
+    if not admin.remove_messages:
+        flash("You have no rights to do it.", 'error')
+    elif message:
         message.mark_as_returned()
         db.session.commit()
         
@@ -410,7 +424,11 @@ def edit_message_submit(id):
     show_full_message = request.args.get('show_full_message')
     
     message = db.session.get(Message, id)
-    if message:
+    admin = db.session.get(AdminPermission, current_user.id)
+    
+    if not admin.edit_messages:
+        flash("You have no rights to do it.", 'error')
+    elif message:
         message.content = form.content.data
         message.tag_as_edited()
         db.session.commit()
@@ -426,7 +444,11 @@ def admin_promote(id):
     user = db.session.get(User, id)
     edit = request.args.get('edit')
     
-    if not user:
+    admin = db.session.get(AdminPermission, current_user.id)
+    
+    if not admin.edit_admins:
+        flash("You have no rights to do it.", 'error')
+    elif not user:
         flash("Can\'t find this user", 'error')
     elif user.admin_permissions:
         flash("User is already have admin rights", 'error')
@@ -441,7 +463,11 @@ def admin_demote(id):
     user = db.session.get(User, id)
     edit = request.args.get('edit')
     
-    if not user:
+    admin = db.session.get(AdminPermission, current_user.id)
+    
+    if not admin.edit_admins:
+        flash("You have no rights to do it.", 'error')
+    elif not user:
         flash("Can\'t find this user", 'error')
     elif not user.admin_permissions:
         flash("User doesn\'t have admin rights", 'error')
@@ -453,18 +479,24 @@ def admin_demote(id):
 @admin_bp.route('/skip_report')
 @login_required
 def skip_report():
+    admin = db.session.get(AdminPermission, current_user.id)
     reported_target = request.args.get('reported_target')
     
-    if reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
-        content = reported_target[1:-1]
-        model_name, object_id = content.split()
-
-        Model = MODEL_MAP.get(model_name)
-        print(content)
-        obj = db.session.get(Model, int(object_id))
+    if not admin.close_reports:
+        flash("You have no rights to do it.", 'error')
+    elif reported_target and reported_target.startswith("<") and reported_target.endswith(">"):
+        close_report(reported_target)
         
-        if obj:
-            print(2)
-            db.session.delete(obj)
-            db.session.commit()
+        flash("Report successfully closed.", 'success')
     return redirect(url_for('admin.panel', selected_action='list_reports'))
+
+def close_report(reported_target: str):
+    content = reported_target[1:-1]
+    model_name, object_id = content.split()
+
+    Model = MODEL_MAP.get(model_name)
+    obj = db.session.get(Model, int(object_id))
+    
+    if obj:
+        db.session.delete(obj)
+        db.session.commit()

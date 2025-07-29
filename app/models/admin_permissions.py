@@ -66,6 +66,8 @@ class AdminPermission(db.Model):
             'list_messages': self.list_messages,
             'edit_messages': self.edit_messages,
             'remove_messages': self.remove_messages,
+            'list_reports': self.list_reports,
+            'close_reports': self.close_reports,
         }
         
         fields_to_update = dict()

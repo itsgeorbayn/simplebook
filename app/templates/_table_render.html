@@ -45,7 +45,7 @@
 {% if admin.list_admins %}
 <td>
     {% if unit.admin_permissions %}
-    Yes. {% if admin.edit_admins %}<a style="color:#b1b1ff" href="{{ url_for('admin.admin_demote', id=unit.id) }}">Demote?</a>{% endif %}
+    Yes. {% if admin.edit_admins %}{% if current_user.id != unit.id %}<a style="color:#b1b1ff" href="{{ url_for('admin.admin_demote', id=unit.id) }}">Demote?</a>{% endif %}{% endif %}
     {% else %}
     No. {% if admin.edit_admins %}<a style="color:#b1b1ff" href="{{ url_for('admin.admin_promote', id=unit.id) }}">Promote?</a>{% endif %}
     {% endif %}
@@ -115,7 +115,8 @@
     'list_users', 'edit_users', 'ban_users', 'list_admins', 'edit_admins',
     'list_posts', 'edit_posts', 'remove_posts',
     'list_comments', 'edit_comments', 'remove_comments',
-    'list_messages', 'edit_messages', 'remove_messages'
+    'list_messages', 'edit_messages', 'remove_messages',
+    'list_reports', 'close_reports'
 ] %}
 
 {% for col in columns %}
