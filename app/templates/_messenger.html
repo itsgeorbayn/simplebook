@@ -102,7 +102,7 @@
 
     function handleMenuAction(action) {
         if (currentMessageId) {
-            const url = `/messages/${action}/${currentMessageId}`;
+            const url = `/messages/${action}/${currentMessageId}?friend_id=${friendId}`;
             window.location.href = url;
         }
     }

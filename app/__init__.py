@@ -14,9 +14,9 @@ def create_app():
     
     logging.basicConfig(level=logging.DEBUG)
     
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        return jsonify(error=str(e)), 500
+    # @app.errorhandler(Exception)
+    # def handle_exception(e):
+    #     return jsonify(error=str(e)), 500
     
     @app.before_request
     def track_history():
