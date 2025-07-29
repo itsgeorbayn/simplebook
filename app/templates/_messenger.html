@@ -139,7 +139,7 @@
                             ${msg.is_forwarded ? `
                                 <div class="small-text" style="font-style: italic">
                                     <div class="is-forwarded" title="Forwarded at ${msg.forwarded_at}">Forwarded from 
-                                    <img class='forwarded-picture' src="/static/images/profile/${msg.forwarded_message_author_picture}" alt=""> ${msg.forwarded_message_author}</div>
+                                    <img class='forwarded-picture' src="https://wtyxtyyiuelqcfsdyixh.supabase.co/storage/v1/object/public/avatars/users/${msg.forwarded_message_author_picture}" alt=""> ${msg.forwarded_message_author}</div>
                                 </div>` : ''}
                             <div class="small-text">
                                 ${msg.sender_username} • ${msg.sended_at} ${msg.is_edited ? ` • <img class='edited-picture' src="/static/images/buttons/edit.png" title="Edited ${msg.edited_at_shorten} ago [${msg.edited_at}]">` : ''}
