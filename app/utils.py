@@ -83,34 +83,6 @@ class Symbols:
         pattern = '[^' + re.escape(''.join(Symbols.allowed_symbols)) + ']'
         return trim_symbols(re.sub(pattern, ' ', title)).strip()
 
-def count_lines():
-    base_path = 'app/models'
-
-    extensions = ('.py')
-    total_lines = 0
-    file_stats = []
-
-    if not os.path.isdir(base_path):
-        print(f"The specified path does not exist: {base_path}")
-    else:
-        for root, dirs, files in os.walk(base_path):
-            for file in files:
-                if file.endswith(extensions):
-                    path = os.path.join(root, file)
-                    try:
-                        with open(path, 'r', encoding='utf-8') as f:
-                            lines = f.readlines()
-                            line_count = len(lines)
-                            total_lines += line_count
-                            file_stats.append((path, line_count))
-                    except Exception as e:
-                        print(f"Error while reading {path}: {e}")
-
-        for path, count in sorted(file_stats):
-            print(f"{path}: {count} строк")
-
-        print(f"\nTotal number of lines in .py and .html files: {total_lines}")
-        
 def bool_conv(val: str):
     val = val.lower()
     if val.lower() == "true":

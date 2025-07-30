@@ -175,7 +175,6 @@ class User(db.Model, UserMixin):
         if not self.admin_permissions:
             return
         
-        print(self.admin_permissions)
         db.session.delete(self.admin_permissions[0])
 
         db.session.commit()

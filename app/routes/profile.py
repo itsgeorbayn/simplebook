@@ -15,7 +15,6 @@ profile_bp = Blueprint('profile', __name__, url_prefix='/profile')
 @profile_bp.route('/', methods=['GET'])
 @login_required
 def profile():
-    print(session.get('history', []))
     friend_list = db.session.query(User, Friendship.is_accepted, Friendship.user2_id).filter(or_(and_(Friendship.user2_id == current_user.id, User.id == Friendship.user1_id), and_(Friendship.user1_id == current_user.id, User.id == Friendship.user2_id))).all()
     session.setdefault('show_hidden_posts', True)
     
