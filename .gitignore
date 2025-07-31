@@ -1,6 +1,6 @@
 .env
 backup.sql
-venv_clean/
+venv/
 __pycache__/
 app/__pycache__
 app/forms/__pycache__
